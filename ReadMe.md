@@ -28,10 +28,6 @@ Depending upon the user inputs given, module should store the configurations in 
 
 7. Run pip install < wheel file name > 
 
-## File Execution
-1. python file_convertor.py
-
-
 To start the functionality run the py file plese follow below mentioned steps:
 1.Switch to development directory Run python file:
     python main_module.py or python3 main_module.py 
