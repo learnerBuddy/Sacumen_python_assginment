@@ -1,0 +1,9 @@
+setup.py
+Assignment_sacumen_python.egg-info/PKG-INFO
+Assignment_sacumen_python.egg-info/SOURCES.txt
+Assignment_sacumen_python.egg-info/dependency_links.txt
+Assignment_sacumen_python.egg-info/requires.txt
+Assignment_sacumen_python.egg-info/top_level.txt
+test_cases/__init__.py
+test_cases/test_readmodule.py
+test_cases/test_writemodule.py
