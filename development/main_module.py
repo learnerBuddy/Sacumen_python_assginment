@@ -21,6 +21,14 @@ def yaml_file_to_flat_dict(input_file):
     """ Converts a yaml file to flat dictionary."""
     with open(input_file, 'r') as f:
         try:
+            """
+            safe_load:
+                Parse the first YAML document in a stream
+                and produce the corresponding Python object.
+
+                Resolve only basic YAML tags. This is known
+                to be safe for untrusted input.
+            """
             yaml_data = yaml.safe_load(f)
             yaml_flat_dict = flat_dict_convertor(yaml_data)
             return yaml_flat_dict
@@ -32,7 +40,11 @@ def yaml_file_to_flat_dict(input_file):
 def cfg_conf_dict_convertor(input_file):
     """ Converts a cfg or a conf file to flat dictionary."""
     try:
-        '''Creating config object'''
+        """
+        A configuration file consists of sections,
+        lead by a "[section]" header,
+        and followed by "name: value" entries, with continuations
+        """
         config_obj = configparser.ConfigParser()
         config_obj.read(input_file)
         cfg_conf_dict = {}
@@ -48,7 +60,6 @@ def cfg_conf_dict_convertor(input_file):
 
 
 def flat_dict_convertor(dict_obj: MutableMapping, parent_key: str = '', sep: str ='_'):
-    """nested dictionary to flat dictionary."""
     items = []
     for key, value in dict_obj.items():
         new_key = parent_key + sep + key if parent_key else key
@@ -69,19 +80,6 @@ def main():
     """
     
     try:
-        
-        print("Supported file formats for the process of set configuration in OS")
-        print("1.yaml", "2.cfg", "3.conf")
-        file_formats = map(int,input("Please enter file format number with space:").split())
-        file_formats = list(file_formats)
-        
-        
-        print("Please choose output file formats for set the configurations in OS")
-        print("1.json", "2.env")
-        
-        configuration_formats = map(int,input("Please enter file format number with space:").split())
-        configuration_formats = list(configuration_formats)
-        
         """
            final_list: this is used for collecting error and succes records
            input_files_list: uploaded files stored in this variable
@@ -92,7 +90,21 @@ def main():
         error_dict = {}
         success_dict = {}
         input_files_list = []
+        configuration_formats_list = []
+
+        print("Supported file formats for the process of set configuration in OS")
+        print("1.yaml", "2.cfg", "3.conf")
+        file_formats = map(int,input("Please enter file format number with space:").split())
+        file_formats = list(file_formats)
         
+        print("Please choose output file formats for set the configurations in OS")
+        confi_choice = input("By default we are creating json and env files,\nIf you want particluar file format Type Yes/No--[y/n]:")
+
+        if "Yes" in confi_choice or "y" in confi_choice:
+            configuration_format = int(input("Please choose file format either 1.json or 2.env:"))
+            configuration_formats_list.append(configuration_format)
+        else:
+            configuration_formats_list.extend([1,2])
         
         try:
             if file_formats[0] and file_formats[1] or file_formats[2]:
@@ -102,13 +114,12 @@ def main():
                 input_files_list.append(yaml_file_path)
                 input_files_list.append(cfg_conf_file_path)
             
-            
         except BaseException:
-            if file_formats[0]:
+            if file_formats[0] == 1:
                 yaml_file_path = input("Please enter yaml file name here:")
                 input_files_list.append(yaml_file_path)
             
-            elif file_formats[1]:
+            else :
                 cfg_conf_file_path = input("Please enter cfg or conf file name here:")
                 input_files_list.append(cfg_conf_file_path)
                 
@@ -126,10 +137,10 @@ def main():
                 input_files_list.remove(file)
                 
         """ Validating and ouput data formats"""
-        if 1 or 2 in configuration_formats:
+        if 1 or 2 in configuration_formats_list:
             pass
         else:
-            del configuration_formats
+            del configuration_formats_list
             return f"Supported file formats are .json and .env"
         
         """Generating and setting the configurations in the OS using input files"""
@@ -154,7 +165,7 @@ def main():
                     """generating json and env files"""
                     file_prefix = os.path.splitext(os.path.basename(input_file))[0]
                     
-                    if len(configuration_formats)==2:
+                    if len(configuration_formats_list)==2:
                         output_json_file = file_prefix+"_"+str(index)+ ".json"
                         output_env_file = file_prefix +"_"+str(index)+ ".env"
 
@@ -175,7 +186,7 @@ def main():
                             error_dict[str(index)+"env"] = "env files not created"
                     else:
                         """generating json or env file based on user input"""
-                        config_file_type = configuration_formats[0]
+                        config_file_type = configuration_formats_list[0]
                         
                         if config_file_type == 1:
                             output_json_file = file_prefix +"_"+str(index)+ ".json"
